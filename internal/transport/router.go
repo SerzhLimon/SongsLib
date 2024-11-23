@@ -50,10 +50,10 @@ type ApiHandleFunctions struct {
 func getRoutes(handleFunctions ApiHandleFunctions) []Route {
 	return []Route{
 		{
-			"GetSongs",
-			http.MethodGet,
-			"/songs",
-			handleFunctions.Server.GetSongs,
+			"SetSong",
+			http.MethodPost,
+			"/setsong",
+			handleFunctions.Server.SetSong,
 		},
 	}
 }
