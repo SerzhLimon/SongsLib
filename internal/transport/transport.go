@@ -3,7 +3,6 @@ package transport
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -44,7 +43,6 @@ func (api *Server) SetSong(c *gin.Context) {
 	}
 
 	req, _ := http.NewRequest(http.MethodGet, "http://localhost:8081/info", nil)
-	fmt.Println(request.Group, request.SongName)
 	q := req.URL.Query()
 	q.Add("group", request.Group)
 	q.Add("song", request.SongName)
@@ -66,16 +64,18 @@ func (api *Server) SetSong(c *gin.Context) {
 		})
 		return
 	}
-	
-	var infoResponse models.InfoSongResponse
-	if err := json.NewDecoder(resp.Body).Decode(&infoResponse); err != nil {
+
+	var songInfo models.InfoSong
+	if err := json.NewDecoder(resp.Body).Decode(&songInfo); err != nil {
 		log.Printf("Error decoding response JSON: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to parse song info",
 		})
 		return
 	}
-	fmt.Println("-->>>>>", infoResponse)
+
+	api.Usecase.SetSong(songInfo)
 
 	c.Status(http.StatusCreated)
 }
+
