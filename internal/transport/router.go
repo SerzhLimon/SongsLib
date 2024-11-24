@@ -61,5 +61,11 @@ func getRoutes(handleFunctions ApiHandleFunctions) []Route {
 			"/getsong",
 			handleFunctions.Server.GetSong,
 		},
+		{
+			"GetLib",
+			http.MethodGet,
+			"/getlib",
+			handleFunctions.Server.GetLib,
+		},
 	}
 }

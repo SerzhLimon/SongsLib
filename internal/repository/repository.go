@@ -10,9 +10,12 @@ import (
 	"github.com/SerzhLimon/SongsLib/internal/models"
 )
 
+const limit = 3
+
 type Repository interface {
 	SetSong(data models.SetSongInPostgres) error
 	GetSong(data models.GetSongRequest) (models.GetSongResponse, error)
+	GetLib(data models.GetLibRequest) (models.GetLibResponse, error)
 }
 
 type pgRepo struct {
@@ -88,5 +91,52 @@ func (r *pgRepo) GetSong(data models.GetSongRequest) (models.GetSongResponse, er
 		return res, err
     }
 
+	return res, nil
+}
+
+func (r *pgRepo) GetLib(data models.GetLibRequest) (models.GetLibResponse, error) {
+	var res models.GetLibResponse
+
+	rows, err := r.db.Query(queryGetLib, 
+		limit, 
+		data.Offset,
+		data.SongName,
+		data.Group,
+		data.Link,
+		data.ReleaseDate,
+	)
+	defer func() {
+		if rows != nil {
+			rows.Close()
+		}
+	}()
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return res, nil
+		}
+		err := errors.Errorf("pgRepo.GetLib %v", err)
+		return res, err
+	}
+
+	for rows.Next() {
+		var song models.InfoSong
+		err := rows.Scan(
+			&song.SongName,
+			&song.Group,
+			&song.ReleaseDate,
+			&song.Link,
+		)
+		if err != nil {
+			err := errors.Errorf("pgRepo.GetLib %v", err)
+			return res, err
+		}
+		res.Songs = append(res.Songs, song)
+	}
+
+	if err := rows.Err(); err != nil {
+		err = errors.Errorf("pgRepo.GetLib %v", err)
+		return res, err
+	}
 	return res, nil
 }

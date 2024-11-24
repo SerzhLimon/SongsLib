@@ -14,6 +14,7 @@ type Usecase struct {
 type UseCase interface {
 	SetSong(data models.InfoSong) error
 	GetSong(data models.GetSongRequest) (models.GetSongResponse, error)
+	GetLib(data models.GetLibRequest) (models.GetLibResponse, error)
 }
 
 func NewUsecase(pgPepo repository.Repository) UseCase {
@@ -49,4 +50,8 @@ func (u *Usecase) parseText(text string) models.SongPagination {
 
 func (u *Usecase) GetSong(data models.GetSongRequest) (models.GetSongResponse, error) {
 	return u.pgPepo.GetSong(data)
+}
+
+func (u *Usecase) GetLib(data models.GetLibRequest) (models.GetLibResponse, error) {
+	return u.pgPepo.GetLib(data)
 }

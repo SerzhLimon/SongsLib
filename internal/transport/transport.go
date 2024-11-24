@@ -109,3 +109,24 @@ func (s *Server) GetSong(c *gin.Context) {
 
 	c.JSON(http.StatusOK, res)
 }
+
+func (s *Server) GetLib(c *gin.Context) {
+	var request models.GetLibRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("Error binding JSON: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+	if request.Offset < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect request"})
+		return
+	}
+
+	res, err := s.Usecase.GetLib(request)
+	if err != nil {
+		log.Printf("%v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err,})
+	}
+
+	c.JSON(http.StatusOK, res)
+}
