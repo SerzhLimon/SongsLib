@@ -8,6 +8,7 @@ import (
 	"github.com/SerzhLimon/SongsLib/config"
 	serv "github.com/SerzhLimon/SongsLib/internal/transport"
 	"github.com/SerzhLimon/SongsLib/pkg/postgres"
+	"github.com/SerzhLimon/SongsLib/pkg/postgres/migrations"
 )
 
 func main() {
@@ -16,7 +17,12 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	defer db.Close()
 
+	err = migrations.Up(db)
+	if err != nil {
+		log.Fatalf("migration error: %v", err)
+	}
 
 	server := serv.NewServer(db)
 	routes := serv.ApiHandleFunctions{
@@ -27,3 +33,6 @@ func main() {
 
 	log.Fatal(router.Run(":8080"))
 }
+
+// viper - config
+// zap, logrus - logger

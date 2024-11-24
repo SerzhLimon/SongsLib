@@ -65,7 +65,10 @@ func (api *Server) SetSong(c *gin.Context) {
 		return
 	}
 
-	var songInfo models.InfoSong
+	songInfo := models.InfoSong{
+		SongName: request.SongName,
+		Group: request.Group,
+	}
 	if err := json.NewDecoder(resp.Body).Decode(&songInfo); err != nil {
 		log.Printf("Error decoding response JSON: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -74,7 +77,14 @@ func (api *Server) SetSong(c *gin.Context) {
 		return
 	}
 
-	api.Usecase.SetSong(songInfo)
+	if err = api.Usecase.SetSong(songInfo); err != nil {
+		log.Printf("%v", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err,
+		})
+		return
+	}
+	
 
 	c.Status(http.StatusCreated)
 }

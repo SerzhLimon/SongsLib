@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/SerzhLimon/SongsLib/internal/models"
@@ -22,15 +21,13 @@ func NewUsecase(pgPepo repository.Repository) UseCase {
 
 func (u *Usecase) SetSong(data models.InfoSong) error {
 
-	res := u.parseText(data.Text)
-
-	for i := range res.Couplet_number {
-		fmt.Print(res.Couplet_number[i], "\n", res.Text[i], "\n")
+	text := u.parseText(data.Text)
+	song := models.SetSongInPostgres{
+		InfoSong:       data,
+		SongPagination: text,
 	}
 
-	
-
-	return nil
+	return u.pgPepo.SetSong(song)
 }
 
 func (u *Usecase) parseText(text string) models.SongPagination {

@@ -1,6 +1,8 @@
 package models
 
 type InfoSong struct {
+	SongName    string
+	Group       string
 	ReleaseDate string
 	Text        string
 	Link        string
@@ -16,3 +18,7 @@ type SongPagination struct {
 	Text           []string
 }
 
+type SetSongInPostgres struct {
+	InfoSong       InfoSong
+	SongPagination SongPagination
+}
