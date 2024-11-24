@@ -55,5 +55,11 @@ func getRoutes(handleFunctions ApiHandleFunctions) []Route {
 			"/setsong",
 			handleFunctions.Server.SetSong,
 		},
+		{
+			"GetSong",
+			http.MethodGet,
+			"/getsong",
+			handleFunctions.Server.GetSong,
+		},
 	}
 }

@@ -14,11 +14,21 @@ type SetSongRequest struct {
 }
 
 type SongPagination struct {
-	Couplet_number []int
-	Text           []string
+	CoupletNumber []int
+	Text          []string
 }
 
 type SetSongInPostgres struct {
 	InfoSong       InfoSong
 	SongPagination SongPagination
+}
+
+type GetSongRequest struct {
+	SongName string `json:"songname"`
+	Offset   int    `json:"offset"`
+}
+
+type GetSongResponse struct {
+	CoupletNumber int
+	Couplet       string
 }

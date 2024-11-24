@@ -12,6 +12,7 @@ import (
 
 type Repository interface {
 	SetSong(data models.SetSongInPostgres) error
+	GetSong(data models.GetSongRequest) (models.GetSongResponse, error)
 }
 
 type pgRepo struct {
@@ -33,34 +34,33 @@ func (r *pgRepo) SetSong(data models.SetSongInPostgres) error {
 			tx.Rollback()
 		}
 	}()
-	
+
 	var songID int
-	err = tx.QueryRow(querySetSongInfo,
+	if err = tx.QueryRow(querySetSongInfo,
 		data.InfoSong.SongName,
 		data.InfoSong.Group,
 		data.InfoSong.Link,
 		data.InfoSong.ReleaseDate,
-	).Scan(&songID)
-	if err != nil {
+	).Scan(&songID); err != nil {
 		err := errors.Errorf("pgRepo.SetSong %v", err)
 		return err
 	}
 
-	valueStrings := make([]string, 0, len(data.SongPagination.Couplet_number))
+	valueStrings := make([]string, 0, len(data.SongPagination.CoupletNumber))
 	valueArgs := make([]interface{}, 0)
 
-	for i, number := range data.SongPagination.Couplet_number {
+	for i, number := range data.SongPagination.CoupletNumber {
 		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d, $%d)", i*3+1, i*3+2, i*3+3))
 		valueArgs = append(valueArgs, songID, number, data.SongPagination.Text[i])
 	}
+
 	querySetSongText := `
 		INSERT INTO songs_text (track_id, couplet_number, couplet_text)
 		VALUES %s
 	`
 	querySetSongText = fmt.Sprintf(querySetSongText, strings.Join(valueStrings, ","))
 
-	_, err = tx.Exec(querySetSongText, valueArgs...)
-	if err != nil {
+	if _, err = tx.Exec(querySetSongText, valueArgs...); err != nil {
 		err = errors.Errorf("pgRepo.SetSong %v", err)
 		return err
 	}
@@ -71,4 +71,22 @@ func (r *pgRepo) SetSong(data models.SetSongInPostgres) error {
 	}
 
 	return nil
+}
+
+func (r *pgRepo) GetSong(data models.GetSongRequest) (models.GetSongResponse, error) {
+	var res models.GetSongResponse 
+
+	err := r.db.QueryRow(queryGetSong, data.SongName, data.Offset).Scan(
+		&res.CoupletNumber,
+		&res.Couplet,
+    )
+    if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return res, nil
+		}
+		err = errors.Errorf("pgRepo.GetSong %v", err)
+		return res, err
+    }
+
+	return res, nil
 }

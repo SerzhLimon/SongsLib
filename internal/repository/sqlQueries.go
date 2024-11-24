@@ -6,9 +6,17 @@ const (
 		VALUES ($1, $2, $3, $4)
 		RETURNING id
 	`
-	// querySetSongText = `
-	// 	INSERT INTO songs_text (track_id, couplet_number, couplet_text)
-	// 	VALUES %s
-	// `
+	queryGetSong = `
+		WITH ids AS (
+			SELECT id
+			FROM songs_info
+			WHERE name = $1
+		)
+		SELECT couplet_number, couplet_text
+		FROM songs_text
+		WHERE track_id IN (SELECT id FROM ids)
+		ORDER BY couplet_number
+		LIMIT 1 OFFSET ($2) - 1
+	`
 
 )

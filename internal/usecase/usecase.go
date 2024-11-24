@@ -13,6 +13,7 @@ type Usecase struct {
 
 type UseCase interface {
 	SetSong(data models.InfoSong) error
+	GetSong(data models.GetSongRequest) (models.GetSongResponse, error)
 }
 
 func NewUsecase(pgPepo repository.Repository) UseCase {
@@ -34,14 +35,18 @@ func (u *Usecase) parseText(text string) models.SongPagination {
 
 	couplets := strings.Split(text, "\n\n")
 	result := models.SongPagination{
-		Couplet_number: make([]int, 0, len(couplets)),
+		CoupletNumber: make([]int, 0, len(couplets)),
 		Text:           make([]string, 0, len(couplets)),
 	}
 
 	for i, couplet := range couplets {
-		result.Couplet_number = append(result.Couplet_number, i+1)
+		result.CoupletNumber = append(result.CoupletNumber, i+1)
 		result.Text = append(result.Text, couplet)
 	}
 
 	return result
+}
+
+func (u *Usecase) GetSong(data models.GetSongRequest) (models.GetSongResponse, error) {
+	return u.pgPepo.GetSong(data)
 }

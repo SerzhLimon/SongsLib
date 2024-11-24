@@ -26,7 +26,7 @@ func NewServer(database *sql.DB) *Server {
 	}
 }
 
-func (api *Server) SetSong(c *gin.Context) {
+func (s *Server) SetSong(c *gin.Context) {
 	var request models.SetSongRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Printf("Error binding JSON: %v", err)
@@ -77,7 +77,7 @@ func (api *Server) SetSong(c *gin.Context) {
 		return
 	}
 
-	if err = api.Usecase.SetSong(songInfo); err != nil {
+	if err = s.Usecase.SetSong(songInfo); err != nil {
 		log.Printf("%v", err)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err,
@@ -89,3 +89,23 @@ func (api *Server) SetSong(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
+func (s *Server) GetSong(c *gin.Context) {
+	var request models.GetSongRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("Error binding JSON: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+	if request.SongName == "" || request.Offset < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect request"})
+		return
+	}
+
+	res, err := s.Usecase.GetSong(request)
+	if err != nil {
+		log.Printf("%v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err,})
+	}
+
+	c.JSON(http.StatusOK, res)
+}
