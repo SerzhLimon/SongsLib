@@ -97,9 +97,12 @@ func (r *pgRepo) GetSong(data models.GetSongRequest) (models.GetSongResponse, er
 func (r *pgRepo) GetLib(data models.GetLibRequest) (models.GetLibResponse, error) {
 	var res models.GetLibResponse
 
+	// offset := data.Offset * limit - 1
+	fmt.Println(limit, data.Offset * limit - 1)
+
 	rows, err := r.db.Query(queryGetLib, 
 		limit, 
-		data.Offset,
+		data.Offset - 1,
 		data.SongName,
 		data.Group,
 		data.Link,

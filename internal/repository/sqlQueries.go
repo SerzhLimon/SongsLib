@@ -23,10 +23,13 @@ const (
 		SELECT name, group_name, link, release_date
 		FROM songs_info
 		WHERE 
-		($3::text IS NULL OR name ILIKE '%' || $3 || '%') AND
-		($4::text IS NULL OR group_name ILIKE '%' || $4 || '%') AND
-		($5::text IS NULL OR link ILIKE '%' || $5 || '%') AND
-		($6::text IS NULL OR release_date = $6)
-		LIMIT $1 OFFSET ($2) * $1;
+		($3::text IS NULL OR name ILIKE '%' || $3 || '%')
+		 AND
+		($4::text IS NULL OR group_name ILIKE '%' || $4 || '%') 
+		AND
+		($5::text IS NULL OR link ILIKE '%' || $5 || '%') 
+		AND
+		($6::text IS NULL OR release_date ILIKE '%' || $6 || '%') 
+		LIMIT $1 OFFSET $2;
 	`
 )
