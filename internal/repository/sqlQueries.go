@@ -29,8 +29,9 @@ const (
 		AND
 		($5::text IS NULL OR link ILIKE '%' || $5 || '%') 
 		AND
-		($6::text IS NULL OR release_date ILIKE '%' || $6 || '%') 
-		LIMIT $1 OFFSET $2;
+		($6::text IS NULL OR release_date ILIKE '%' || $6 || '%')
+		ORDER BY id
+		LIMIT $1::integer OFFSET ($2::integer) * $1::integer;
 	`
 
 	queryDeleteSongText = `

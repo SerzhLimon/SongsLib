@@ -48,3 +48,10 @@ curl -X PATCH "http://localhost:8080/updatesongtext" \
   "coupletnum": 1,
   "text": "В заросшем парке стоит старинный дом\nЗабиты окна, и мрак царит извечно в нём\nСказать я пытался: «Чудовищ нет на земле»\nНо тут же раздался ужасный голос во мгле\nГолос во мгле"
 }'
+
+curl -X GET "http://localhost:8080/getlib" \
+-H "Content-Type: application/json" \
+-d '{
+  "group": "К",
+  "offset": 1
+}' | jq .
