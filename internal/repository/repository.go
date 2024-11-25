@@ -16,6 +16,7 @@ type Repository interface {
 	SetSong(data models.SetSongInPostgres) error
 	GetSong(data models.GetSongRequest) (models.GetSongResponse, error)
 	GetLib(data models.GetLibRequest) (models.GetLibResponse, error)
+	DeleteSong(data models.DeleteSongRequest) error
 }
 
 type pgRepo struct {
@@ -77,19 +78,19 @@ func (r *pgRepo) SetSong(data models.SetSongInPostgres) error {
 }
 
 func (r *pgRepo) GetSong(data models.GetSongRequest) (models.GetSongResponse, error) {
-	var res models.GetSongResponse 
+	var res models.GetSongResponse
 
 	err := r.db.QueryRow(queryGetSong, data.SongName, data.Offset).Scan(
 		&res.CoupletNumber,
 		&res.Couplet,
-    )
-    if err != nil {
+	)
+	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return res, nil
 		}
 		err = errors.Errorf("pgRepo.GetSong %v", err)
 		return res, err
-    }
+	}
 
 	return res, nil
 }
@@ -97,12 +98,9 @@ func (r *pgRepo) GetSong(data models.GetSongRequest) (models.GetSongResponse, er
 func (r *pgRepo) GetLib(data models.GetLibRequest) (models.GetLibResponse, error) {
 	var res models.GetLibResponse
 
-	// offset := data.Offset * limit - 1
-	fmt.Println(limit, data.Offset * limit - 1)
-
-	rows, err := r.db.Query(queryGetLib, 
-		limit, 
-		data.Offset - 1,
+	rows, err := r.db.Query(queryGetLib,
+		limit,
+		data.Offset-1,
 		data.SongName,
 		data.Group,
 		data.Link,
@@ -127,8 +125,8 @@ func (r *pgRepo) GetLib(data models.GetLibRequest) (models.GetLibResponse, error
 		err := rows.Scan(
 			&song.SongName,
 			&song.Group,
-			&song.ReleaseDate,
 			&song.Link,
+			&song.ReleaseDate,
 		)
 		if err != nil {
 			err := errors.Errorf("pgRepo.GetLib %v", err)
@@ -142,4 +140,55 @@ func (r *pgRepo) GetLib(data models.GetLibRequest) (models.GetLibResponse, error
 		return res, err
 	}
 	return res, nil
+}
+
+func (r *pgRepo) DeleteSong(data models.DeleteSongRequest) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		err := errors.Errorf("pgRepo.DeleteSong %v", err)
+		return err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+	
+	res, err := tx.Exec(queryDeleteSongText, data.SongName)
+	if err != nil {
+		err := errors.Errorf("pgRepo.DeleteSong %v", err)
+		return err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		err := errors.Errorf("pgRepo.DeleteSong %v", err)
+		return err
+	}
+	if rowsAffected < 1 {
+		err := errors.Errorf("pgRepo.DeleteSong: no rows affected in songs_text, song not found")
+		return err
+	}
+
+	res, err = tx.Exec(queryDeleteSongInfo, data.SongName)
+	if err != nil {
+		err := errors.Errorf("pgRepo.DeleteSong %v", err)
+		return err
+	}
+	rowsAffected, err = res.RowsAffected()
+	if err != nil {
+		err := errors.Errorf("pgRepo.DeleteSong %v", err)
+		return err
+	}
+	if rowsAffected < 1 {
+		err := errors.Errorf("pgRepo.DeleteSong: no rows affected in songs_info, song not found")
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		err = errors.Errorf("pgRepo.SetSong %v", err)
+		return err
+	}
+
+	return nil
 }

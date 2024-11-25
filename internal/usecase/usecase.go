@@ -15,6 +15,7 @@ type UseCase interface {
 	SetSong(data models.InfoSong) error
 	GetSong(data models.GetSongRequest) (models.GetSongResponse, error)
 	GetLib(data models.GetLibRequest) (models.GetLibResponse, error)
+	DeleteSong(data models.DeleteSongRequest) error
 }
 
 func NewUsecase(pgPepo repository.Repository) UseCase {
@@ -55,3 +56,8 @@ func (u *Usecase) GetSong(data models.GetSongRequest) (models.GetSongResponse, e
 func (u *Usecase) GetLib(data models.GetLibRequest) (models.GetLibResponse, error) {
 	return u.pgPepo.GetLib(data)
 }
+
+func (u *Usecase) DeleteSong(data models.DeleteSongRequest) error {
+	return u.pgPepo.DeleteSong(data)
+}
+

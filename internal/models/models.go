@@ -44,3 +44,7 @@ type GetLibRequest struct {
 type GetLibResponse struct {
 	Songs []InfoSong
 }
+
+type DeleteSongRequest struct {
+	SongName string `json:"songname"`
+}

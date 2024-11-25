@@ -32,4 +32,15 @@ const (
 		($6::text IS NULL OR release_date ILIKE '%' || $6 || '%') 
 		LIMIT $1 OFFSET $2;
 	`
+
+	queryDeleteSongText = `
+		DELETE FROM songs_text
+		WHERE track_id IN (SELECT id FROM songs_info WHERE name = $1);
+	`
+	
+	queryDeleteSongInfo = `
+		DELETE FROM songs_info
+		WHERE name = $1;
+	`
+
 )

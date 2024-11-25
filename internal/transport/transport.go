@@ -85,7 +85,6 @@ func (s *Server) SetSong(c *gin.Context) {
 		return
 	}
 	
-
 	c.Status(http.StatusCreated)
 }
 
@@ -130,3 +129,23 @@ func (s *Server) GetLib(c *gin.Context) {
 
 	c.JSON(http.StatusOK, res)
 }
+
+func (s *Server) DeleteSong(c *gin.Context) {
+	var request models.DeleteSongRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("Error binding JSON: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+
+	err := s.Usecase.DeleteSong(request)
+	if err != nil {
+		log.Printf("%v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err,})
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+
+
