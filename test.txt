@@ -40,3 +40,11 @@ curl -X PATCH "http://localhost:8080/updatesonginfo" \
   "id": 6,
   "songname": "Проклятый старый дом!"
 }'
+
+curl -X PATCH "http://localhost:8080/updatesongtext" \
+-H "Content-Type: application/json" \
+-d '{
+  "id": 8,
+  "coupletnum": 1,
+  "text": "В заросшем парке стоит старинный дом\nЗабиты окна, и мрак царит извечно в нём\nСказать я пытался: «Чудовищ нет на земле»\nНо тут же раздался ужасный голос во мгле\nГолос во мгле"
+}'

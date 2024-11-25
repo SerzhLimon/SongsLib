@@ -17,7 +17,8 @@ type Repository interface {
 	GetSong(data models.GetSongRequest) (models.GetSongResponse, error)
 	GetLib(data models.GetLibRequest) (models.GetLibResponse, error)
 	DeleteSong(data models.DeleteSongRequest) error
-	UpdateSongInfo(data models.UpdateSongRequest) error
+	UpdateSongInfo(data models.UpdateSongInfoRequest) error
+	UpdateSongText(data models.UpdateSongTextRequest) error
 }
 
 type pgRepo struct {
@@ -187,14 +188,14 @@ func (r *pgRepo) DeleteSong(data models.DeleteSongRequest) error {
 	}
 
 	if err = tx.Commit(); err != nil {
-		err = errors.Errorf("pgRepo.SetSong %v", err)
+		err = errors.Errorf("pgRepo.DeleteSong %v", err)
 		return err
 	}
 
 	return nil
 }
 
-func (r *pgRepo) UpdateSongInfo(data models.UpdateSongRequest) error {
+func (r *pgRepo) UpdateSongInfo(data models.UpdateSongInfoRequest) error {
 
     result, err := r.db.Exec(queryUpdateSongInfo,
         data.TrackID,               
@@ -204,17 +205,42 @@ func (r *pgRepo) UpdateSongInfo(data models.UpdateSongRequest) error {
         data.NewLink,            
     )
     if err != nil {
-		err := errors.Errorf("pgRepo.DeleteSong %v", err)
+		err := errors.Errorf("pgRepo.UpdateSongInfo %v", err)
 		return err
 	}
 
     rowsAffected, err := result.RowsAffected()
     if err != nil {
-        return errors.Errorf("pgRepo.UpdateSong: %v", err)
+        return errors.Errorf("pgRepo.UpdateSongInfo: %v", err)
     }
 
     if rowsAffected < 1 {
-        err = errors.New("pgRepo.UpdateSong: no rows updated")
+        err = errors.New("pgRepo.UpdateSongInfo: no rows updated")
+        return err
+    }
+
+    return nil 
+}
+
+func (r *pgRepo) UpdateSongText(data models.UpdateSongTextRequest) error {
+
+    result, err := r.db.Exec(queryUpdateSongText,
+        data.CoupletNum,            
+        data.TrackID,               
+        data.NewText,                  
+    )
+    if err != nil {
+		err := errors.Errorf("pgRepo.UpdateSongText %v", err)
+		return err
+	}
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        return errors.Errorf("pgRepo.UpdateSongText: %v", err)
+    }
+
+    if rowsAffected < 1 {
+        err = errors.New("pgRepo.UpdateSongText: no rows updated")
         return err
     }
 

@@ -151,7 +151,7 @@ func (s *Server) DeleteSong(c *gin.Context) {
 }
 
 func (s *Server) UpdateSongInfo(c *gin.Context) {
-	var request models.UpdateSongRequest
+	var request models.UpdateSongInfoRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Printf("Error binding JSON: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format"})
@@ -159,7 +159,7 @@ func (s *Server) UpdateSongInfo(c *gin.Context) {
 	}
 
 	if request.TrackID < 1 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Both 'id' fields must be provided"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Both 'id' field must be provided"})
 		return
 	}
 
@@ -172,4 +172,25 @@ func (s *Server) UpdateSongInfo(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+func (s *Server) UpdateSongText(c *gin.Context) {
+	var request models.UpdateSongTextRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("Error binding JSON: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+
+	if request.TrackID < 1 || request.CoupletNum < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Both 'id' and 'coupletnum' fields must be provided"})
+		return
+	}
+
+	err := s.Usecase.UpdateSongText(request)
+	if err != nil {
+		log.Printf("%v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrcet data"})
+	}
+
+	c.Status(http.StatusOK)
+}
 

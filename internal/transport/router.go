@@ -27,8 +27,6 @@ func NewRouterWithGinEngine(router *gin.Engine, handleFunctions ApiHandleFunctio
 			router.GET(route.Pattern, route.HandlerFunc)
 		case http.MethodPost:
 			router.POST(route.Pattern, route.HandlerFunc)
-		case http.MethodPut:
-			router.PUT(route.Pattern, route.HandlerFunc)
 		case http.MethodPatch:
 			router.PATCH(route.Pattern, route.HandlerFunc)
 		case http.MethodDelete:
@@ -78,6 +76,12 @@ func getRoutes(handleFunctions ApiHandleFunctions) []Route {
 			http.MethodPatch,
 			"/updatesonginfo",
 			handleFunctions.Server.UpdateSongInfo,
+		},
+		{
+			"UpdateSongText",
+			http.MethodPatch,
+			"/updatesongtext",
+			handleFunctions.Server.UpdateSongText,
 		},
 	}
 }

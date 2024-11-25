@@ -53,5 +53,12 @@ const (
 		WHERE id = $1;
 	`
 
+	queryUpdateSongText = `
+		UPDATE songs_text
+		SET 
+			couplet_text = COALESCE($3, couplet_text)
+		WHERE couplet_number = $1 AND track_id = $2;
+	`
+
 
 )

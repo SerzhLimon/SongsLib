@@ -49,10 +49,16 @@ type DeleteSongRequest struct {
 	TrackID int `json:"id"`
 }
 
-type UpdateSongRequest struct {
+type UpdateSongInfoRequest struct {
 	TrackID        int     `json:"id"`
 	NewSongName    *string `json:"songname,omitempty"`
 	NewGroup       *string `json:"group,omitempty"`
 	NewReleaseDate *string `json:"releasedate,omitempty"`
 	NewLink        *string `json:"link,omitempty"`
+}
+
+type UpdateSongTextRequest struct {
+	TrackID    int     `json:"id"`
+	CoupletNum int     `json:"coupletnum"`
+	NewText    *string `json:"text,omitempty"`
 }

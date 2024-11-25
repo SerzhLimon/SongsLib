@@ -12,6 +12,8 @@ type SongDetail struct {
 	Link        string `json:"link"`
 }
 
+
+
 func main() {
 	r := gin.Default()
 
