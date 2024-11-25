@@ -31,5 +31,12 @@ curl -X GET "http://localhost:8080/getlib" \
 curl -X DELETE "http://localhost:8080/deletesong" \
 -H "Content-Type: application/json" \
 -d '{
-  "songname": "Проклятый старый дом"
+  "id": 6
+}'
+
+curl -X PATCH "http://localhost:8080/updatesonginfo" \
+-H "Content-Type: application/json" \
+-d '{
+  "id": 6,
+  "songname": "Проклятый старый дом!"
 }'

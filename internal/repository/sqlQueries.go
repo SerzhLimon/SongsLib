@@ -35,12 +35,23 @@ const (
 
 	queryDeleteSongText = `
 		DELETE FROM songs_text
-		WHERE track_id IN (SELECT id FROM songs_info WHERE name = $1);
+		WHERE track_id = $1;
 	`
 	
 	queryDeleteSongInfo = `
 		DELETE FROM songs_info
-		WHERE name = $1;
+		WHERE id = $1;
 	`
+	
+	queryUpdateSongInfo = `
+		UPDATE songs_info
+		SET 
+			name = COALESCE($2, name),
+			group_name = COALESCE($3, group_name),
+			release_date = COALESCE($4, release_date),
+			link = COALESCE($5, link)
+		WHERE id = $1;
+	`
+
 
 )

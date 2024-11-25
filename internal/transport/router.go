@@ -73,5 +73,11 @@ func getRoutes(handleFunctions ApiHandleFunctions) []Route {
 			"/deletesong",
 			handleFunctions.Server.DeleteSong,
 		},
+		{
+			"UpdateSongInfo",
+			http.MethodPatch,
+			"/updatesonginfo",
+			handleFunctions.Server.UpdateSongInfo,
+		},
 	}
 }

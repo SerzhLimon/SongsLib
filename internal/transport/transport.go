@@ -36,9 +36,7 @@ func (s *Server) SetSong(c *gin.Context) {
 		return
 	}
 	if request.Group == "" || request.SongName == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Both 'group' and 'song' fields must be provided",
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Both 'group' and 'song' fields must be provided"})
 		return
 	}
 
@@ -138,6 +136,11 @@ func (s *Server) DeleteSong(c *gin.Context) {
 		return
 	}
 
+	if request.TrackID < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Both 'id' fields must be provided"})
+		return
+	}
+
 	err := s.Usecase.DeleteSong(request)
 	if err != nil {
 		log.Printf("%v", err)
@@ -147,5 +150,26 @@ func (s *Server) DeleteSong(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+func (s *Server) UpdateSongInfo(c *gin.Context) {
+	var request models.UpdateSongRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("Error binding JSON: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+
+	if request.TrackID < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Both 'id' fields must be provided"})
+		return
+	}
+
+	err := s.Usecase.UpdateSongInfo(request)
+	if err != nil {
+		log.Printf("%v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err,})
+	}
+
+	c.Status(http.StatusOK)
+}
 
 

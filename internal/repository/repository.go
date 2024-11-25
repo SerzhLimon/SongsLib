@@ -17,6 +17,7 @@ type Repository interface {
 	GetSong(data models.GetSongRequest) (models.GetSongResponse, error)
 	GetLib(data models.GetLibRequest) (models.GetLibResponse, error)
 	DeleteSong(data models.DeleteSongRequest) error
+	UpdateSongInfo(data models.UpdateSongRequest) error
 }
 
 type pgRepo struct {
@@ -154,7 +155,7 @@ func (r *pgRepo) DeleteSong(data models.DeleteSongRequest) error {
 		}
 	}()
 	
-	res, err := tx.Exec(queryDeleteSongText, data.SongName)
+	res, err := tx.Exec(queryDeleteSongText, data.TrackID)
 	if err != nil {
 		err := errors.Errorf("pgRepo.DeleteSong %v", err)
 		return err
@@ -170,7 +171,7 @@ func (r *pgRepo) DeleteSong(data models.DeleteSongRequest) error {
 		return err
 	}
 
-	res, err = tx.Exec(queryDeleteSongInfo, data.SongName)
+	res, err = tx.Exec(queryDeleteSongInfo, data.TrackID)
 	if err != nil {
 		err := errors.Errorf("pgRepo.DeleteSong %v", err)
 		return err
@@ -191,4 +192,31 @@ func (r *pgRepo) DeleteSong(data models.DeleteSongRequest) error {
 	}
 
 	return nil
+}
+
+func (r *pgRepo) UpdateSongInfo(data models.UpdateSongRequest) error {
+
+    result, err := r.db.Exec(queryUpdateSongInfo,
+        data.TrackID,               
+        data.NewSongName,            
+        data.NewGroup,        
+        data.NewReleaseDate,      
+        data.NewLink,            
+    )
+    if err != nil {
+		err := errors.Errorf("pgRepo.DeleteSong %v", err)
+		return err
+	}
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        return errors.Errorf("pgRepo.UpdateSong: %v", err)
+    }
+
+    if rowsAffected < 1 {
+        err = errors.New("pgRepo.UpdateSong: no rows updated")
+        return err
+    }
+
+    return nil 
 }

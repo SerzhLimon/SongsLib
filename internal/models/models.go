@@ -46,5 +46,13 @@ type GetLibResponse struct {
 }
 
 type DeleteSongRequest struct {
-	SongName string `json:"songname"`
+	TrackID int `json:"id"`
+}
+
+type UpdateSongRequest struct {
+	TrackID        int     `json:"id"`
+	NewSongName    *string `json:"songname,omitempty"`
+	NewGroup       *string `json:"group,omitempty"`
+	NewReleaseDate *string `json:"releasedate,omitempty"`
+	NewLink        *string `json:"link,omitempty"`
 }
