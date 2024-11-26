@@ -34,6 +34,7 @@ type GetSongResponse struct {
 }
 
 type GetSongInfo struct {
+	ID          int
 	SongName    string
 	Group       string
 	ReleaseDate string

@@ -70,3 +70,10 @@ func (u *Usecase) UpdateSongInfo(data models.UpdateSongInfoRequest) error {
 func (u *Usecase) UpdateSongText(data models.UpdateSongTextRequest) error {
 	return u.pgPepo.UpdateSongText(data)
 }
+
+func SafeDereference(str *string) string {
+    if str == nil {
+        return "nil"
+    }
+    return *str
+}

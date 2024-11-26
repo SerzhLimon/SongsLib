@@ -125,6 +125,7 @@ func (r *pgRepo) GetLib(data models.GetLibRequest) (models.GetLibResponse, error
 	for rows.Next() {
 		var song models.GetSongInfo
 		err := rows.Scan(
+			&song.ID,
 			&song.SongName,
 			&song.Group,
 			&song.Link,

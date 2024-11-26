@@ -30,7 +30,7 @@ func NewServer(database *sql.DB) *Server {
 func (s *Server) SetSong(c *gin.Context) {
 	var request models.SetSongRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		logrus.WithError(err).Error("Error decode JSON")
+		logrus.WithError(err).Error("error decode JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format"})
 		return
 	}
@@ -58,7 +58,7 @@ func (s *Server) SetSong(c *gin.Context) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		logrus.WithError(err).Errorf("Unexpected status code from external API: %d", resp.StatusCode)
+		logrus.WithError(err).Errorf("unexpected status code from external API: %d", resp.StatusCode)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to fetch valid song info"})
 		return
 	}
@@ -68,7 +68,7 @@ func (s *Server) SetSong(c *gin.Context) {
 		Group:    request.Group,
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&songInfo); err != nil {
-		logrus.WithError(err).Error("Error decode JSON")
+		logrus.WithError(err).Error("error decode JSON")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse song info"})
 		return
 	}
@@ -77,24 +77,24 @@ func (s *Server) SetSong(c *gin.Context) {
 	logrus.Debugf("Parsed request: %s %s %s %s %s",
 		songInfo.SongName, songInfo.Group, songInfo.ReleaseDate, songInfo.Link, songInfo.Text)
 
-
 	if err = s.Usecase.SetSong(songInfo); err != nil {
 		logrus.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "fail to set song"})
 		return
 	}
 
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusCreated, gin.H{"success": "true"})
 }
 
 func (s *Server) GetSong(c *gin.Context) {
 	var request models.GetSongRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		logrus.WithError(err).Error("Error binding JSON")
+		logrus.WithError(err).Error("error binding JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format"})
 		return
 	}
 	if request.SongName == "" || request.Offset < 1 {
+		logrus.Warn("validation failed: 'offset' must be greater than 0, songname must be not empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect request"})
 		return
 	}
@@ -107,8 +107,10 @@ func (s *Server) GetSong(c *gin.Context) {
 		logrus.Error(err)
 		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "unknown song or couplet"})
+			return
 		}
 		c.JSON(http.StatusBadRequest, gin.H{"error": "fail to get song"})
+		return
 	}
 
 	c.JSON(http.StatusOK, res)
@@ -122,14 +124,19 @@ func (s *Server) GetLib(c *gin.Context) {
 		return
 	}
 	if request.Offset < 1 {
-		logrus.Warn("Validation failed: 'offset' must be greater than 0")
+		logrus.Warn("validation failed: 'offset' must be greater than 0")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect offset"})
 		return
 	}
 
 	logrus.SetLevel(logrus.DebugLevel)
-	logrus.Debugf("Parsed request: %d %s %s %s %s", request.Offset,
-		request.SongName, request.Group, request.Link, request.ReleaseDate)
+	logrus.Debugf("Parsed request: %d %s %s %s %s",
+		request.Offset,
+		uc.SafeDereference(&request.SongName),
+		uc.SafeDereference(&request.Group),
+		uc.SafeDereference(&request.ReleaseDate),
+		uc.SafeDereference(&request.Link),
+	)
 
 	res, err := s.Usecase.GetLib(request)
 	if err != nil {
@@ -163,7 +170,7 @@ func (s *Server) DeleteSong(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "fail to delete song"})
 	}
 
-	c.Status(http.StatusNoContent)
+	c.JSON(http.StatusNoContent, gin.H{"success": "true"})
 }
 
 func (s *Server) UpdateSongInfo(c *gin.Context) {
@@ -182,7 +189,12 @@ func (s *Server) UpdateSongInfo(c *gin.Context) {
 
 	logrus.SetLevel(logrus.DebugLevel)
 	logrus.Debugf("Parsed request: %d %s %s %s %s",
-		request.TrackID, *request.NewGroup, *request.NewSongName, *request.NewReleaseDate, *request.NewLink)
+		request.TrackID,
+		uc.SafeDereference(request.NewSongName),
+		uc.SafeDereference(request.NewGroup),
+		uc.SafeDereference(request.NewReleaseDate),
+		uc.SafeDereference(request.NewLink),
+	)
 
 	err := s.Usecase.UpdateSongInfo(request)
 	if err != nil {
@@ -190,7 +202,7 @@ func (s *Server) UpdateSongInfo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "fail to update song"})
 	}
 
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{"success": "true"})
 }
 
 func (s *Server) UpdateSongText(c *gin.Context) {
@@ -216,5 +228,5 @@ func (s *Server) UpdateSongText(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "fail to update song"})
 	}
 
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{"success": "true"})
 }

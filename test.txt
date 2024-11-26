@@ -10,7 +10,7 @@ curl -X GET "http://localhost:8080/getsong" \
 -d '{
   "songname": "Лесник",
   "offset": 2
-}'
+}' | jq .
 
 curl -X GET "http://localhost:8080/getlib" \
 -H "Content-Type: application/json" \
@@ -37,8 +37,10 @@ curl -X DELETE "http://localhost:8080/deletesong" \
 curl -X PATCH "http://localhost:8080/updatesonginfo" \
 -H "Content-Type: application/json" \
 -d '{
-  "id": 6,
-  "songname": "Проклятый старый дом!"
+  "id": 9,
+  "songname": "Проклятый старый дом!",
+  "link": "empty link",
+  "releasedate": "07.07.2077"
 }'
 
 curl -X PATCH "http://localhost:8080/updatesongtext" \
@@ -53,5 +55,13 @@ curl -X GET "http://localhost:8080/getlib" \
 -H "Content-Type: application/json" \
 -d '{
   "group": "К",
+  "offset": 1
+}' | jq .
+
+curl -X GET "http://localhost:8080/getlib" \
+-H "Content-Type: application/json" \
+-d '{
+  "group": "о",
+  "releasedate": "77",
   "offset": 1
 }' | jq .

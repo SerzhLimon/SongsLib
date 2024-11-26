@@ -20,7 +20,7 @@ const (
 	`
 	
 	queryGetLib = `
-		SELECT name, group_name, link, release_date
+		SELECT id, name, group_name, link, release_date
 		FROM songs_info
 		WHERE 
 		($3::text IS NULL OR name ILIKE '%' || $3 || '%')
