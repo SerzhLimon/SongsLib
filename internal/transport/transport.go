@@ -170,7 +170,7 @@ func (s *Server) DeleteSong(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "fail to delete song"})
 	}
 
-	c.JSON(http.StatusNoContent, gin.H{"success": "true"})
+	c.JSON(http.StatusOK, gin.H{"success": "true"})
 }
 
 func (s *Server) UpdateSongInfo(c *gin.Context) {
@@ -220,7 +220,7 @@ func (s *Server) UpdateSongText(c *gin.Context) {
 	}
 
 	logrus.SetLevel(logrus.DebugLevel)
-	logrus.Debugf("Parsed request: %d %d %s", request.TrackID, request.CoupletNum, *request.NewText)
+	logrus.Debugf("Parsed request: %d %d %s", request.TrackID, request.CoupletNum, uc.SafeDereference(request.NewText))
 
 	err := s.Usecase.UpdateSongText(request)
 	if err != nil {

@@ -47,6 +47,11 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Group and song parameters are required"})
 			return
 		}
+
+		if _, ok := songs[song]; !ok {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "unknown track"})
+			return
+		}
 		songDetail := SongDetail{
 			ReleaseDate: songs[song][1],
 			Link: songs[song][2],
