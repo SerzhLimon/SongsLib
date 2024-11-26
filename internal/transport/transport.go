@@ -43,7 +43,8 @@ func (s *Server) SetSong(c *gin.Context) {
 	logrus.SetLevel(logrus.DebugLevel)
 	logrus.Debugf("Parsed request: %s %s", request.SongName, request.Group)
 
-	req, _ := http.NewRequest(http.MethodGet, "http://localhost:8081/info", nil)
+	// req, _ := http.NewRequest(http.MethodGet, "http://localhost:8081/info", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/info", nil)
 	q := req.URL.Query()
 	q.Add("group", request.Group)
 	q.Add("song", request.SongName)
