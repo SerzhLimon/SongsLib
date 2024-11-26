@@ -33,6 +33,13 @@ type GetSongResponse struct {
 	Couplet       string
 }
 
+type GetSongInfo struct {
+	SongName    string
+	Group       string
+	ReleaseDate string
+	Link        string
+}
+
 type GetLibRequest struct {
 	SongName    string `json:"songname"`
 	Group       string `json:"group"`
@@ -42,7 +49,7 @@ type GetLibRequest struct {
 }
 
 type GetLibResponse struct {
-	Songs []InfoSong
+	Songs []GetSongInfo
 }
 
 type DeleteSongRequest struct {

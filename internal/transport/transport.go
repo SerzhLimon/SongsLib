@@ -3,6 +3,7 @@ package transport
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 
@@ -101,6 +102,9 @@ func (s *Server) GetSong(c *gin.Context) {
 	res, err := s.Usecase.GetSong(request)
 	if err != nil {
 		log.Printf("%v", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err,})
+		}
 		c.JSON(http.StatusBadRequest, gin.H{"error": err,})
 	}
 

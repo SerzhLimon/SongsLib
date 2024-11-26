@@ -88,7 +88,7 @@ func (r *pgRepo) GetSong(data models.GetSongRequest) (models.GetSongResponse, er
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return res, nil
+			return res, err
 		}
 		err = errors.Errorf("pgRepo.GetSong %v", err)
 		return res, err
@@ -123,7 +123,7 @@ func (r *pgRepo) GetLib(data models.GetLibRequest) (models.GetLibResponse, error
 	}
 
 	for rows.Next() {
-		var song models.InfoSong
+		var song models.GetSongInfo
 		err := rows.Scan(
 			&song.SongName,
 			&song.Group,
@@ -141,6 +141,7 @@ func (r *pgRepo) GetLib(data models.GetLibRequest) (models.GetLibResponse, error
 		err = errors.Errorf("pgRepo.GetLib %v", err)
 		return res, err
 	}
+	
 	return res, nil
 }
 
