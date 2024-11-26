@@ -27,6 +27,18 @@ func NewServer(database *sql.DB) *Server {
 	}
 }
 
+// SetSong godoc
+//
+//	@Summary	Set song in lib
+//	@Tags		song
+//	@Accept		json
+//	@Produce	json
+//	@Param		song	body		string	true	"Song Name"
+//	@Param		group	body		string	true	"Group"
+//	@success	201		{string}	string
+//	@Failure	400		{string}	string
+//	@Failure	500		{string}	string
+//	@Router		/setsong [post]
 func (s *Server) SetSong(c *gin.Context) {
 	var request models.SetSongRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -87,6 +99,18 @@ func (s *Server) SetSong(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"success": "true"})
 }
 
+// GetSong godoc
+//
+//	@Summary	Get song from lib
+//	@Tags		song
+//	@Accept		json
+//	@Produce	json
+//	@Param		songname	body		string	true	"Song Name"
+//	@Param		offset	    body		int	    true	"Offset"
+//	@success	200		{string}	string
+//	@Failure	400		{string}	string
+//	@Failure	404		{string}	string
+//	@Router		/getsong [get]
 func (s *Server) GetSong(c *gin.Context) {
 	var request models.GetSongRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -117,6 +141,22 @@ func (s *Server) GetSong(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// GetLib godoc
+//
+//	@Summary	Get song from lib
+//	@Tags		song
+//	@Accept		json
+//	@Produce	json
+//	@Param		songname	body		string	true	"Song Name"
+//	@Param		group	    body		string	    true	"Group"
+//	@Param		releasedate	    body		string	    true	"Release Date"
+//	@Param		link	    body		string	    true	"Link"
+//	@Param		offset	    body		string	    true	"Offset"
+//
+// @success	200		{string}	string
+// @Failure	400		{string}	string
+// @Failure	404		{string}	string
+// @Router		/getlib [get]
 func (s *Server) GetLib(c *gin.Context) {
 	var request models.GetLibRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -148,6 +188,18 @@ func (s *Server) GetLib(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// DeleteSong godoc
+//
+//	@Summary	Delete song from lib
+//	@Tags		song
+//	@Accept		json
+//	@Produce	json
+//	@Param		id	body		int	true	"Track ID"
+//
+//	@success	200		{string}	string
+//	@Failure	400		{string}	string
+//	@Failure	404		{string}	string
+//	@Router		/deletesong [delete]
 func (s *Server) DeleteSong(c *gin.Context) {
 	var request models.DeleteSongRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -174,6 +226,21 @@ func (s *Server) DeleteSong(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": "true"})
 }
 
+// UpdateSongInfo godoc
+//
+//	@Summary	Update song info from lib
+//	@Tags		song
+//	@Accept		json
+//	@Produce	json
+//	@Param		id	body		int	true	"Track ID"
+//	@Param		songname	body		string	false	"Song Name"
+//	@Param		group	    body		string	    false	"Group"
+//	@Param		releasedate	    body		string	    false	"Release Date"
+//	@Param		link	    body		string	    false	"Link"
+//	@success	200		{string}	string
+//	@Failure	400		{string}	string
+//	@Failure	404		{string}	string
+//	@Router		/updatesonginfo [patch]
 func (s *Server) UpdateSongInfo(c *gin.Context) {
 	var request models.UpdateSongInfoRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -206,6 +273,20 @@ func (s *Server) UpdateSongInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": "true"})
 }
 
+// UpdateSongText godoc
+//
+//	@Summary	Delete song from lib
+//	@Tags		song
+//	@Accept		json
+//	@Produce	json
+//	@Param		id	body		int	true	"Track ID"
+//	@Param		coupletnum	body		int	true	"Couplet Num"
+//	@Param		text	body		string	true	"New Text"
+
+// @success	200		{string}	string
+// @Failure	400		{string}	string
+// @Failure	404		{string}	string
+// @Router		/updatesongtext [patch]
 func (s *Server) UpdateSongText(c *gin.Context) {
 	var request models.UpdateSongTextRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

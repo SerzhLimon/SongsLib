@@ -5,16 +5,30 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
 	"github.com/SerzhLimon/SongsLib/config"
+	_ "github.com/SerzhLimon/SongsLib/docs"
 	serv "github.com/SerzhLimon/SongsLib/internal/transport"
 	"github.com/SerzhLimon/SongsLib/pkg/postgres"
 	"github.com/SerzhLimon/SongsLib/pkg/postgres/migrations"
 )
 
+//	@title			Songs Library
+//	@version		1.0
+//	@description	This is a simple songs library server.
+//	@termsOfService	http://swagger.io/terms/
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host		localhost:8080
+// @BasePath	/
 func main() {
 
 	gin.SetMode(gin.ReleaseMode)
-	
+
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp: true,
 	})
@@ -51,6 +65,8 @@ func main() {
 
 	logrus.Info("Setting up router...")
 	router := serv.NewRouter(routes)
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	logrus.Infof("Starting server on port %s...", ":8080")
 	if err := router.Run(":8080"); err != nil {
